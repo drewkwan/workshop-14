@@ -25,35 +25,40 @@ public class RedisConfig {
     private String redisHost;
 
     @Value("${spring.redis.port}")
-    private Optional<Integer> redisPort; //read up what this is
+    private Optional<Integer> redisPort; //Indicates that this value is optional
 
     @Value("${spring.redis.password}")
     private String redisPassword;
-
+    //these three instances of codes are just standard things when creating and configuring a redis connnection. 
 
 
 
     @Bean
     @Scope("singleton")
-    public  RedisTemplate<String, Object> redisTemplate() {
+    public  RedisTemplate<String, Object> redisTemplate() { //redistemplate represents  a redis connection
         final RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisHost);
         config.setPort(redisPort.get());
         config.setPassword(redisPassword);
+        //This configures the database and the configuration values are injected from the property file
 
         final JedisClientConfiguration jedisClient = JedisClientConfiguration.builder().build();
         final JedisConnectionFactory jedisFac = new JedisConnectionFactory(config, jedisClient);
         jedisFac.afterPropertiesSet();
+        //this creates the client and the factory.
+
+
         logger.info("redis host port > {redisHost} {redisPort}", redisHost, redisPort);
         RedisTemplate<String, Object> template = new RedisTemplate();
         template.setConnectionFactory(jedisFac);
         template.setKeySerializer(new StringRedisSerializer());
-
-        RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer(getClass().getClassLoader());
+        RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer(getClass().getClassLoader()); //what is this?
         template.setValueSerializer(serializer);
         return template;
+        //Create template with client
 
-        //in general gotta look through all of these. Never seen and don't know what these tools are for
+        //it appears that this whole page of code is just standard. Looks like a copy paste from the slide
+
 
     }
 

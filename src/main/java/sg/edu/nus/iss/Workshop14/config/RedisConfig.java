@@ -5,10 +5,16 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.data.redis.JedisClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
@@ -19,10 +25,10 @@ public class RedisConfig {
     private String redisHost;
 
     @Value("${spring.redis.port}")
-    private Optional<Integer>redisPort;
+    private Optional<Integer> redisPort; //read up what this is
 
     @Value("${spring.redis.password}")
-    private Optional<String>redisPassword;
+    private String redisPassword;
 
 
 
@@ -32,7 +38,7 @@ public class RedisConfig {
     public  RedisTemplate<String, Object> redisTemplate() {
         final RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisHost);
-        config.setPort(redisPort);
+        config.setPort(redisPort.get());
         config.setPassword(redisPassword);
 
         final JedisClientConfiguration jedisClient = JedisClientConfiguration.builder().build();
@@ -41,11 +47,13 @@ public class RedisConfig {
         logger.info("redis host port > {redisHost} {redisPort}", redisHost, redisPort);
         RedisTemplate<String, Object> template = new RedisTemplate();
         template.setConnectionFactory(jedisFac);
-        template.setKeySerializer(new StringRedisSerializer);
+        template.setKeySerializer(new StringRedisSerializer());
 
-        RedisSerializer<Object> serializer = new JDKSerializationRedisSerializer(getClass().getClassLoader());
+        RedisSerializer<Object> serializer = new JdkSerializationRedisSerializer(getClass().getClassLoader());
         template.setValueSerializer(serializer);
-        return null;
+        return template;
+
+        //in general gotta look through all of these. Never seen and don't know what these tools are for
 
     }
 

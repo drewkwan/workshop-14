@@ -1,5 +1,5 @@
 
 
 ```
-mvn spint-boot:run
+mvn spring-boot:run
 ```
